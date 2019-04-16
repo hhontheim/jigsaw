@@ -1,0 +1,234 @@
+\documentclass[aspectratio=169,x11names,11pt]{beamer}
+\usetheme{Pittsburgh}
+\usecolortheme{dove} % seagull, dove, seahorse
+\useoutertheme{sidebar} % sidebar [subsection=true]
+\useinnertheme{inmargin}
+\usepackage{xcolor}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{wrapfig}
+\usepackage{lmodern}
+\usepackage{listings}
+\usepackage[autostyle=true,german=quotes]{csquotes}
+\usepackage{hyperref}
+
+\hypersetup{pdfstartview={Fit}}
+
+\selectlanguage{ngerman}
+
+\author[]{Henning Hontheim}
+\title[]{Modularisierung in Java mit Jigsaw}
+\date{}
+% \date{\today}
+% \logo{\includegraphics[height=.35cm]{images/logo_mono.eps}}
+
+\setbeamercovered{invisible}
+\beamertemplatenavigationsymbolsempty
+
+% For Footnotes without markers on the slide
+% https://tex.stackexchange.com/questions/30720/footnote-without-a-marker
+\newcommand\blfootnote[1]{%
+	\begingroup
+	\renewcommand\thefootnote{}\footnote{#1}%
+	\addtocounter{footnote}{-1}%
+	\endgroup
+}
+
+\definecolor{cLightPlain}{HTML}{000000}
+\definecolor{cLightKeyword}{HTML}{9B2393}
+\definecolor{cLightComment}{HTML}{536579}
+\definecolor{cLightString}{HTML}{C41A16}
+\definecolor{cLightNumber}{HTML}{1C00CF}
+\definecolor{cLightBackground}{HTML}{FFFFFF}
+
+\definecolor{cDarkPlain}{HTML}{FFFFFF}
+\definecolor{cDarkKeyword}{HTML}{FD8F3F}
+\definecolor{cDarkComment}{HTML}{6C7986}
+\definecolor{cDarkString}{HTML}{FC6A5D}
+\definecolor{cDarkNumber}{HTML}{9686F5}
+\definecolor{cDarkBackground}{HTML}{1F1F24}
+
+\lstdefinestyle{codeStyleLight}{
+	numbers=left,
+	numbersep=5pt,
+	breaklines=true,
+	showstringspaces=false,
+	frame=l ,
+	xleftmargin=15pt,
+	xrightmargin=15pt,
+	basicstyle=\ttfamily\scriptsize\color{cLightPlain},
+	stepnumber=1,
+	keywordstyle=\color{cLightKeyword},
+	commentstyle=\color{cLightComment},
+	stringstyle=\color{cLightString},
+	numberstyle=\tiny\color{cLightNumber},
+	backgroundcolor=\color{cLightBackground}
+}
+
+\lstdefinestyle{codeStyleDark}{
+	numbers=left,
+	numbersep=5pt,
+	breaklines=true,
+	showstringspaces=false,
+	frame=l ,
+	xleftmargin=15pt,
+	xrightmargin=15pt,
+	basicstyle=\ttfamily\scriptsize\color{cDarkPlain},
+	stepnumber=1,
+	keywordstyle=\color{cDarkKeyword},
+	commentstyle=\color{cDarkComment},
+	stringstyle=\color{cDarkString},
+	numberstyle=\tiny\color{cDarkBackground},
+	backgroundcolor=\color{cDarkBackground}
+}
+
+\lstdefinelanguage{Jigsaw}{
+	morekeywords={
+		module,
+		requires,
+		exports,
+		opens,
+		transitive,
+		to
+	},
+	sensitive=false, % keywords are not case-sensitive
+	morecomment=[l]{//}, % l is for line comment
+	morecomment=[s]{/*}{*/}, % s is for start and end delimiter
+	morestring=[b]" % defines that strings are enclosed in double quotes
+}
+
+\lstset{style=codeStyleLight}
+
+\begin{document}
+
+\begin{frame}[plain]
+\section*{Intro}
+\vskip.35em
+\begin{beamercolorbox}{title}
+	\usebeamerfont{title}\inserttitle
+\end{beamercolorbox}
+\vskip5.825em
+\begin{beamercolorbox}{author}
+	\usebeamerfont{author}\insertauthor
+\end{beamercolorbox}
+\vskip.825em
+\begin{beamercolorbox}{date}
+	\usebeamerfont{date}\insertdate
+\end{beamercolorbox}
+\end{frame}
+
+\begin{frame}[plain]{Inhalt}
+\section*{Inhalt}
+	\tableofcontents
+\end{frame}
+
+\begin{frame}{Was ändert sich mit Java 9?}
+\section{Java 9$+$}
+\begin{itemize}
+	\item Verzeichnisstruktur hat sich geändert
+	\item JRE nicht mehr in eigenem Verzeichnis des JDK
+	\item Java-Libs rt.jar und tools.jar gibt es nicht mehr
+	\item Einige interne APIs sind nicht mehr zugreifbar (z.B. einige \texttt{com.sun.*}- und \texttt{sun.misc.*}-Packages)
+	\item Reflection ist eingeschränkt
+	\item Linker \texttt{jlink}, der Distributionen erstellt, die ohne zusätzliches Java ausführbar sind
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Jigsaw}{Das Java Platform Module System (JPMS)}
+\section{Jigsaw}
+\begin{itemize}
+	\item Skalierbarkeit von Java (z. B. für IoT)
+	\item Erhöhung der Sicherheit und Wartbarkeit von Java
+	\item Verbesserte Performance
+	\item Förderung gut konstruierter und wartbarer Bibliotheken und Anwendungen
+	\item \textbf{Explizite Abhängigkeitskontrolle} (Definition lose gekoppelter Services und zuverlässige Konfiguration)
+	\item Einfache Handhabbarkeit
+\end{itemize}
+\hrule
+\begin{enumerate}
+	\item Die Modularisierung von Java selbst (mit \enquote{Platform Modules})
+	\item Die Modularisierung von Bibliotheken und Anwendungen (mit \enquote{Application Modules})
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Unterschiede zu OSGi}
+\subsection{OSGi}
+\begin{itemize}
+	\item OSGi unterstützt Versionierung
+	\item OSGi unterstützt \textit{Hot Deployment}, also Austausch der Module zur Laufzeit
+\end{itemize}
+\textbf{Jigsaw unterstützt beides nicht!}
+\end{frame}
+
+\begin{frame}{Verschiedene Arten von Modulen}
+\section{Modularten}
+\begin{itemize}
+	\item \textbf{Platform Explicit Modules}: \textit{Platform Modules}\\
+	Module der Java Runtime (siehe \texttt{\$ java \text{-}\text{-}list-modules})
+	\item \textbf{Application Explicit Modules}\\
+	JARs, die einen \textit{Module Descriptor} (\texttt{module-info.class}) enthalten
+	\item \textbf{Open Modules}\\
+	Zusätzlich zu \textit{Application Explicit Modules}: Export der Module zur Laufzeit für \textit{Deep Reflection}
+	\item \textbf{Automatic Modules}\\
+	JARs, die keinen \textit{Module Descriptor} enthalten
+	\item \textbf{Unnamed Modules}\\
+	Alle JARs des \texttt{CLASSPATH} werden zu genau einem (!) unbenannten Modul zusammengesasst. Diese werden (selbst mit \textit{Module Descriptor}) als \textit{Nicht-Jigsaw-Module} behandelt.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Die \texttt{module-info.java}-Datei}
+\subsection{\texttt{module-info.java}}
+\lstinputlisting[language=Jigsaw]{./snippets/module-info.java}
+\end{frame}
+
+\newcommand{\bspeins}{Manuelle Verlinkung über den \texttt{MODULEPATH}}
+\newcommand{\bspzwei}{Manuelle Verlinkung als einzelne JAR Module}
+
+\begin{frame}{Beispiele}
+\section{Beispiele}
+\begin{enumerate}
+	\item \hyperref[bsp1]{\bspeins}
+	\item \hyperref[bsp2]{\bspzwei}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{\bspeins}
+\subsection{\texttt{MODULEPATH}}
+\label{bsp1}
+\lstinputlisting[language=sh,xleftmargin=0pt,xrightmargin =0pt]{./snippets/compile1.sh}
+\end{frame}
+
+\begin{frame}{\bspzwei}
+\subsection{JAR Module}
+\label{bsp2}
+\lstinputlisting[language=sh,xleftmargin=0pt,xrightmargin =0pt]{./snippets/compile2.sh}
+\end{frame}
+
+\begin{frame}[fragile]{\bspzwei}{Analyse der Dependencies mit \texttt{jdeps}}
+\begin{lstlisting}[language=sh,xleftmargin=0pt,xrightmargin=0pt]
+$ jdeps -s --module-path modules modules/*.jar
+net.hontheim.jigsaw.meineapp -> java.base
+net.hontheim.jigsaw.meineapp -> net.hontheim.jigsaw.meinutil
+net.hontheim.jigsaw.meinutil -> java.base
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Weitere Informationen}
+\section{Weiterführendes}
+Das Java Platform Module System (JPMS, "Jigsaw")\\
+\url{https://www.torsten-horn.de/techdocs/Jigsaw.html}
+\end{frame}
+
+%\begin{frame}{Quellen}
+%\section{Quellen}
+%\bibliography{sources} 
+%\bibliographystyle{plain}
+%\end{frame}
+
+\end{document}
