@@ -253,9 +253,9 @@ TSWLatexianTemp*
 
 # -----------------------------------------------------------------------------
 
-presentation/images
-presentation/images/eagle.eps
-presentation/images/logo.eps
-presentation/images/logo_mono.eps
+slides/images
+slides/images/eagle.eps
+slides/images/logo.eps
+slides/images/logo_mono.eps
 
 *.bib
